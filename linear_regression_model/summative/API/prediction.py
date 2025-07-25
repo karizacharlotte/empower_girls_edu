@@ -20,7 +20,13 @@ import uvicorn
 
 # Load the trained model and preprocessing components
 try:
-    model_artifacts = joblib.load('../../best_model_artifacts.pkl')
+    # Try relative path first (for local development)
+    try:
+        model_artifacts = joblib.load('../../best_model_artifacts.pkl')
+    except FileNotFoundError:
+        # Try current directory (for Render deployment)
+        model_artifacts = joblib.load('best_model_artifacts.pkl')
+    
     print("✅ Model artifacts loaded successfully!")
     print(f"   Model: {model_artifacts['model_name']}")
     print(f"   Test MSE: {model_artifacts['model_performance']['test_mse']:.4f}")

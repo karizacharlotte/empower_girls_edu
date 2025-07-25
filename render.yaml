@@ -1,0 +1,16 @@
+# Render.com Deployment Configuration
+# This file contains the configuration needed for deploying to Render
+
+# Build Command (for Python service)
+pip install -r linear_regression_model/summative/API/requirements.txt
+
+# Start Command (for Python service)
+cd linear_regression_model/summative/API && python -m uvicorn prediction:app --host 0.0.0.0 --port $PORT
+
+# Environment Variables needed:
+# PORT (automatically set by Render)
+# PYTHON_VERSION=3.9.16 (or latest)
+
+# Auto-Deploy: Yes (deploy on every push to main branch)
+# Health Check Path: /health
+# Instance Type: Free tier is sufficient for this project
