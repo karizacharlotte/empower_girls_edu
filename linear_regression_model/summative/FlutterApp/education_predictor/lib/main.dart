@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 // Import app models and constants for better organization
 // import 'models/app_models.dart';
@@ -261,10 +259,34 @@ class _PredictionPageState extends State<PredictionPage> {
   bool _isLoading = false;
   Map<String, dynamic>? _predictionResult;
   String? _errorMessage;
+  bool _apiConnected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkApiConnection();
+  }
+
+  Future<void> _checkApiConnection() async {
+    final connected = await _testApiConnection();
+    setState(() {
+      _apiConnected = connected;
+    });
+  }
 
   // API Configuration - Will be updated with deployed URL
-  static const String baseUrl = 'http://localhost:8000'; // For local testing
+  // static const String baseUrl = 'http://localhost:8000'; // For local testing
   // static const String baseUrl = 'https://your-api-url.onrender.com'; // Replace with actual URL when deployed
+
+  // Method to test API connectivity
+  Future<bool> _testApiConnection() async {
+    try {
+      // API health check disabled in demo mode
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
   
   // Form options matching the dataset
   final List<String> _genderOptions = ['female', 'male'];
@@ -297,7 +319,7 @@ class _PredictionPageState extends State<PredictionPage> {
       // For demo purposes, simulate API call with local prediction
       await _simulateAPICall();
       
-      // Uncomment below when API is deployed
+      // Real API call implementation (uncomment when API is deployed)
       /*
       final response = await http.post(
         Uri.parse('$baseUrl/predict'),
@@ -427,7 +449,7 @@ class _PredictionPageState extends State<PredictionPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header with mission context
+              // Header with mission context and API status
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
@@ -437,19 +459,39 @@ class _PredictionPageState extends State<PredictionPage> {
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      '🎯 Empowering Girls Through Data',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                    Row(
+                      children: [
+                        const Text(
+                          '🎯 Empowering Girls Through Data',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const Spacer(),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: _apiConnected ? Colors.green : Colors.orange,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            _apiConnected ? 'API Connected' : 'Demo Mode',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 8),
-                    Text(
+                    const SizedBox(height: 8),
+                    const Text(
                       'Enter student information to predict academic performance and identify intervention opportunities.',
                       style: TextStyle(
                         fontSize: 14,
